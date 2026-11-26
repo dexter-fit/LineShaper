@@ -31,6 +31,8 @@ services:
         condition: service_healthy
     environment:
       TZ: "Europe/Bratislava"
+      EDITOR_AUTH: false
+      NO_DOWNLOAD: true
     restart: unless-stopped
     logging:
       driver: json-file
@@ -47,6 +49,8 @@ services:
         condition: service_healthy
     environment:
       TZ: "Europe/Bratislava"
+      NO_DOWNLOAD: true
+      ROUTER_AUTH: false
     restart: unless-stopped
     logging:
       driver: json-file
@@ -63,9 +67,11 @@ services:
         condition: service_healthy
     environment:
       TZ: "Europe/Bratislava"
-      EDITOR_AUTH: ${EDITOR_AUTH:?EDITOR_AUTH must be set}
-      ROUTER_AUTH: ${ROUTER_AUTH:?ROUTER_AUTH must be set}
-      NO_DOWNLOAD: ${NO_DOWNLOAD:-false}
+      EDITOR_AUTH: false
+      ROUTER_AUTH: false
+      NO_DOWNLOAD: true
+    env_file:
+      - api/.env
     restart: unless-stopped
     logging:
       driver: json-file
@@ -73,7 +79,11 @@ services:
         max-size: "10m"
         max-file: "5"
     healthcheck:
-      test: ["CMD", "curl", "--fail", "--silent", "--show-error", "http://line-shaper-api:9004/lineShaper/api/mapStats/"]
+      test:
+        - CMD
+        - node
+        - -e
+        - "fetch('http://localhost:9004/lineShaper/api/mapStats/').then(r => process.exit(r.status === 401 || r.ok ? 0 : 1)).catch(() => process.exit(1))"
       interval: 30s
       timeout: 5s
       retries: 3
@@ -92,6 +102,8 @@ services:
       POSTGRES_DB: ${DB_DATABASE}
       PGUSER: ${DB_USER}
       TZ: "Europe/Bratislava"
+    env_file:
+      - api/.env
     restart: unless-stopped
     logging:
       driver: json-file

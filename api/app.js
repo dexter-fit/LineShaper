@@ -78,7 +78,7 @@ app.get(apiBaseUrl + 'pointsInRad', verifyToken, async (req, res) => {
 
 // Used in export use case
 app.get(apiBaseUrl + 'pointsByGid', verifyEditorToken, async (req, res) => {
-        if (process.env.NO_DOWNLOAD) {
+        if (process.env.NO_DOWNLOAD === 'true') {
             res.send([]);
         } else {
             res.send(await dbPoint.getPointsByGID(db, req.query));
@@ -203,7 +203,7 @@ app.listen(9004, async () => {
 function verifyCredentials(req, res, next) {
     const user = auth.parse(req.header('Authorization'));
     if (req.query.type === 'editor') {
-        if (process.env.EDITOR_AUTH) {
+        if (process.env.EDITOR_AUTH === 'true') {
             let editorUsers;
             try {
                 editorUsers = JSON.parse(process.env.EDITOR_USERS);
@@ -221,7 +221,7 @@ function verifyCredentials(req, res, next) {
             res.send(JSON.stringify(jwt.sign('editor', secret)));
         }
     } else if (req.query.type === 'router') {
-        if (process.env.ROUTER_AUTH) {
+        if (process.env.ROUTER_AUTH === 'true') {
             let routerUsers;
             try {
                 routerUsers = JSON.parse(process.env.ROUTER_USERS);

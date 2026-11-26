@@ -1,0 +1,16 @@
+services:
+  line-shaper-api:
+    image: dexter.fit.vutbr.cz/line-shaper/line-shaper-api:latest
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+  line-shaper-map-editor:
+    image: dexter.fit.vutbr.cz/line-shaper/line-shaper-editor:latest
+    build:
+      context: ./editor
+      dockerfile: Dockerfile
+  line-shaper-line-router:
+    image: dexter.fit.vutbr.cz/line-shaper/line-shaper-router:latest
+    build:
+      context: ./router
+      dockerfile: Dockerfile
